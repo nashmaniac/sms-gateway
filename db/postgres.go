@@ -3,6 +3,7 @@ package db
 import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 	"os"
 	"sms-gateway/models"
 	"strconv"
@@ -33,10 +34,14 @@ func BuildConnectionObject() models.DBConnectionHolder {
 
 func GetPostgresConnection() *gorm.DB  {
 	dbObj := BuildConnectionObject()
+	log.Println("Connecting to the database")
 	db, err := gorm.Open(postgres.Open(dbObj.GetDSNString()), &gorm.Config{})
 	if err != nil {
 		panic("Unable to connect to database")
 	}
-	// run all the automigration in here
+	log.Println("DB connection successful!")
+	// run all the auto migration in here
+	db.AutoMigrate(&models.MessageTemplate{})
+
 	return db
 }

@@ -16,8 +16,6 @@ func checkEnvironmentVariables() {
 		}
 		log.Println(fmt.Sprintf("%v - %v", key, val))
 	}
-
-
 }
 
 func StartApp() {

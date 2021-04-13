@@ -1,5 +1,8 @@
 package scripts
 
+import "sms-gateway/db"
+
 func RunTestScripts() {
-	TestEngToDBCodeConversion()
+	db.GetPostgresConnection()
+	PopulateMessageTemplateDB()
 }
