@@ -9,6 +9,10 @@ type smsService struct {
 	smsRepo interfaces.SmsRepository
 }
 
+func (s *smsService) FindLeastUsedMessageTemplate() *models.MessageTemplate {
+	return s.smsRepo.FindLeastUsedMessageTemplate()
+}
+
 func (s *smsService) CreateMessageTemplate(message string, category string) *models.MessageTemplate {
 	model := models.MessageTemplate{
 		Template: message,

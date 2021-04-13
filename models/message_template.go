@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
@@ -24,6 +25,10 @@ func (template *MessageTemplate) BeforeCreate(tx *gorm.DB) (err error)  {
 func (template *MessageTemplate) BeforeSave(tx *gorm.DB) (err error)  {
 	template.UpdateTime = time.Now()
 	return
+}
+
+func (template MessageTemplate) OutputFormattedMessage(code string) string {
+	return fmt.Sprintf(template.Template, code)
 }
 
 
