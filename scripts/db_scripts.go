@@ -21,3 +21,20 @@ func PopulateMessageTemplateDB() {
 		log.Println(savedTemplate.Id)
 	}
 }
+
+func PopulateSenderToDB() {
+	senders := []string {
+		"8801886267494",
+		"8801886267495",
+		"8801719267494",
+		"8801720267494",
+	}
+	repo := repository.NewSmsRepository()
+	smsService := services.NewSmsService(repo)
+
+	for _, sender := range senders {
+		savedmodel := smsService.CreateSender(sender)
+		log.Println(savedmodel)
+	}
+
+}

@@ -5,5 +5,6 @@ import "sms-gateway/db"
 func RunTestScripts() {
 	db.GetPostgresConnection()
 	//PopulateMessageTemplateDB()
-	TestSMSFormatting()
+	//TestSMSFormatting()
+	PopulateSenderToDB()
 }

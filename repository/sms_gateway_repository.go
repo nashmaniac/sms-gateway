@@ -11,6 +11,11 @@ type smsRepository struct {
 	db *gorm.DB
 }
 
+func (s *smsRepository) CreateSender(sender models.Sender) *models.Sender {
+	s.db.Create(&sender)
+	return &sender
+}
+
 func (s *smsRepository) FindLeastUsedMessageTemplate() *models.MessageTemplate {
 	var messageTemplate models.MessageTemplate
 	s.db.Find(&models.MessageTemplate{}).Order("count").First(&messageTemplate)
