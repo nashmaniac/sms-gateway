@@ -43,9 +43,11 @@ func GetPostgresConnection() *gorm.DB  {
 		panic("Unable to connect to database")
 	}
 	log.Println("DB connection successful!")
+
 	// run all the auto migration in here
 	db.AutoMigrate(&models.MessageTemplate{})
 	db.AutoMigrate(&models.Sender{})
+	db.AutoMigrate(&models.BusinessEntity{})
 
 	return db
 }

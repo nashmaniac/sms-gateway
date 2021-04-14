@@ -1,6 +1,7 @@
 package scripts
 
 import (
+	"fmt"
 	"log"
 	"sms-gateway/repository"
 	"sms-gateway/services"
@@ -36,5 +37,16 @@ func PopulateSenderToDB() {
 		savedmodel := smsService.CreateSender(sender)
 		log.Println(savedmodel)
 	}
+}
 
+func PopulateBusinessEntityToDB() {
+	names := []string {"BAT", "Unilever", "Trust Bank"}
+
+	repo := repository.NewSmsRepository()
+	smsService := services.NewSmsService(repo)
+
+	for i, name := range names {
+		model := smsService.CreateBusinessEntity(name)
+		log.Println(fmt.Sprintf("%v - %v - %v", i, model.Name, model.Id))
+	}
 }

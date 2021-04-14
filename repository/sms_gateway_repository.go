@@ -11,6 +11,11 @@ type smsRepository struct {
 	db *gorm.DB
 }
 
+func (s *smsRepository) CreateBusinessEntity(entity models.BusinessEntity) *models.BusinessEntity {
+	s.db.Create(&entity)
+	return &entity;
+}
+
 func (s *smsRepository) CreateSender(sender models.Sender) *models.Sender {
 	s.db.Create(&sender)
 	return &sender

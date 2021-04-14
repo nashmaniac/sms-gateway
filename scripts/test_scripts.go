@@ -6,5 +6,7 @@ func RunTestScripts() {
 	db.GetPostgresConnection()
 	//PopulateMessageTemplateDB()
 	//TestSMSFormatting()
-	PopulateSenderToDB()
+	//PopulateSenderToDB()
+
+	PopulateBusinessEntityToDB()
 }

@@ -6,4 +6,5 @@ type SmsService interface {
 	CreateMessageTemplate(message string, category string) *models.MessageTemplate
 	FindLeastUsedMessageTemplate() *models.MessageTemplate
 	CreateSender(sender string) *models.Sender
+	CreateBusinessEntity(entity string) *models.BusinessEntity
 }

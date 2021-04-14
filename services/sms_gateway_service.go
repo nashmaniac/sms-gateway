@@ -9,6 +9,13 @@ type smsService struct {
 	smsRepo interfaces.SmsRepository
 }
 
+func (s *smsService) CreateBusinessEntity(entity string) *models.BusinessEntity {
+	model := models.BusinessEntity{
+		Name:         entity,
+	}
+	return s.smsRepo.CreateBusinessEntity(model)
+}
+
 func (s *smsService) CreateSender(sender string) *models.Sender {
 	model := models.Sender{
 		Msisdn:       sender,
