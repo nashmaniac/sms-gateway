@@ -48,6 +48,7 @@ func GetPostgresConnection() *gorm.DB  {
 	db.AutoMigrate(&models.MessageTemplate{})
 	db.AutoMigrate(&models.Sender{})
 	db.AutoMigrate(&models.BusinessEntity{})
+	db.AutoMigrate(&models.Message{})
 
 	return db
 }

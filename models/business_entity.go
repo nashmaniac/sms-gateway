@@ -13,6 +13,7 @@ type BusinessEntity struct {
 	ApiKey string `json:"api_key"`
 	CreationTime time.Time `json:"creation_time"`
 	UpdateTime time.Time `json:"update_time"`
+	Message []Message
 }
 
 func (b *BusinessEntity) BeforeCreate(tx *gorm.DB) (err error)  {

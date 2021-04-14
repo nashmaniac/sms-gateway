@@ -1,12 +1,57 @@
 package services
 
 import (
+	"errors"
 	"sms-gateway/interfaces"
 	"sms-gateway/models"
+	"sms-gateway/utils"
 )
 
 type smsService struct {
 	smsRepo interfaces.SmsRepository
+}
+
+func (s *smsService) SendTextMessage(apiKey string, pin string, to string, source string, dest string) (*models.Message, error) {
+	businessModel := s.smsRepo.FindBusinessEntityByApiKey(apiKey)
+	if businessModel == nil {
+		return nil, errors.New("business entity with apiKey not present")
+	}
+	fromObj := s.smsRepo.FindLeastUsedSender()
+	messageTemplate := s.smsRepo.FindLeastUsedMessageTemplate()
+	converter := utils.CodeConverter{Code: pin, Source: source, Destination: dest}
+	messageToSend := messageTemplate.OutputFormattedMessage(*converter.ConvertMessage())
+	message := s.CreateMessage(*businessModel, *fromObj, to, messageToSend)
+	// increment from and template count
+	fromObj.Count++
+	messageTemplate.Count++
+	s.smsRepo.GetDB().Save(fromObj)
+	s.smsRepo.GetDB().Save(messageTemplate)
+	dispatcher := utils.GetMessageDispatcher(message.Id, message.FromNumber, message.ToNumber, message.Content)
+	dispatcher.Send()
+	return message, nil
+}
+
+func (s *smsService) CreateMessage(entity models.BusinessEntity, from models.Sender, to string, content string) *models.Message {
+	m := models.Message{
+		BusinessEntityId: entity.Id,
+		FromNumber:       from.Msisdn,
+		ToNumber:         to,
+		Content:          content,
+	}
+	model := s.smsRepo.CreateMessage(m)
+	return model
+}
+
+func (s *smsService) FindLeastUsedSender() *models.Sender {
+	return s.smsRepo.FindLeastUsedSender()
+}
+
+func (s *smsService) GetBusinessEntityByApiKey(apiKey string) (*models.BusinessEntity, error) {
+	model := s.smsRepo.FindBusinessEntityByApiKey(apiKey)
+	if model == nil {
+		return nil, errors.New("no business entity found with apiKey")
+	}
+	return model, nil
 }
 
 func (s *smsService) CreateBusinessEntity(entity string) *models.BusinessEntity {

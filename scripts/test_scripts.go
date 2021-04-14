@@ -7,6 +7,7 @@ func RunTestScripts() {
 	//PopulateMessageTemplateDB()
 	//TestSMSFormatting()
 	//PopulateSenderToDB()
-
-	PopulateBusinessEntityToDB()
+	//PopulateBusinessEntityToDB()
+	//TestSMSSending()
+	TestSMSSendingCarrier()
 }
