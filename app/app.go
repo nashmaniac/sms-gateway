@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sms-gateway/scripts"
 )
 
 func checkEnvironmentVariables() {
@@ -19,6 +18,7 @@ func checkEnvironmentVariables() {
 }
 
 func StartApp() {
-	checkEnvironmentVariables()
-	scripts.RunTestScripts()
+	log.Println("Hello World")
+	//checkEnvironmentVariables()
+	//scripts.RunTestScripts()
 }
