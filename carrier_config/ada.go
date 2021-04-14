@@ -1,8 +1,12 @@
 package carrier_config
 
 import (
+	"encoding/xml"
+	"fmt"
+	"github.com/go-resty/resty/v2"
 	"log"
 	"os"
+	"sms-gateway/carrier_wise_response"
 )
 
 type AdaReach struct {
@@ -30,12 +34,41 @@ func (ada AdaReach) BuildQueryParams() map[string]string {
 	return m
 }
 
-func (ada *AdaReach) Send(from string, to string, content string) {
+func (ada *AdaReach) Send(from string, to string, content string) *CarrierResponse {
 	log.Println(ada.From, ada.To, ada.Message)
 	ada.InitCarrier(from, to, content)
 	log.Println(ada.From, ada.To, ada.Message)
 	queryParams := ada.BuildQueryParams()
-	log.Println(queryParams)
+
+	client := resty.New()
+
+	resp, err := client.R().EnableTrace().SetQueryParams(queryParams).Get(ada.URL)
+	fmt.Println("Response Info:")
+	fmt.Println("  Error      :", err)
+	fmt.Println("  Status Code:", resp.StatusCode())
+	fmt.Println("  Status     :", resp.Status())
+	fmt.Println("  Proto      :", resp.Proto())
+	fmt.Println("  Time       :", resp.Time())
+	fmt.Println("  Received At:", resp.ReceivedAt())
+	fmt.Println("  Body       :\n", resp)
+	fmt.Println()
+
+	if resp.StatusCode() == 200 {
+		var serviceClassArray carrier_wise_response.ArrayofServiceClass
+		xml.Unmarshal(resp.Body(), &serviceClassArray)
+		if len(serviceClassArray.ServiceClass) > 0 {
+			return &CarrierResponse{ResponseId: serviceClassArray.ServiceClass[0].MessageId, IsSuccess: true}
+		} else {
+			return &CarrierResponse{
+				IsSuccess: true,
+			}
+		}
+	} else {
+		return &CarrierResponse{
+			IsSuccess:  false,
+			ErrorText:  "Error in Ada Api",
+		}
+	}
 }
 
 func (ada *AdaReach) InitCarrier(from string, to string, content string) *AdaReach {
@@ -57,7 +90,7 @@ func (ada *AdaReach) InitCarrier(from string, to string, content string) *AdaRea
 	ada.Password = password
 	ada.URL = url
 	ada.Method = "GET"
-	ada.From = from
+	ada.From = "adareach"
 	ada.To = to
 	ada.Message = content
 	return ada

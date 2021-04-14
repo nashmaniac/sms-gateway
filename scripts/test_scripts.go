@@ -8,6 +8,6 @@ func RunTestScripts() {
 	//TestSMSFormatting()
 	//PopulateSenderToDB()
 	//PopulateBusinessEntityToDB()
-	//TestSMSSending()
-	TestSMSSendingCarrier()
+	TestSMSSending()
+	//TestSMSSendingCarrier()
 }

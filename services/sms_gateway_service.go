@@ -5,29 +5,45 @@ import (
 	"sms-gateway/interfaces"
 	"sms-gateway/models"
 	"sms-gateway/utils"
+	"time"
 )
 
 type smsService struct {
 	smsRepo interfaces.SmsRepository
 }
 
-func (s *smsService) SendTextMessage(apiKey string, pin string, to string, source string, dest string) (*models.Message, error) {
+func (s *smsService) SendTextMessage(apiKey string, pin string, to string, source string, dest string, conversion bool) (*models.Message, error) {
 	businessModel := s.smsRepo.FindBusinessEntityByApiKey(apiKey)
 	if businessModel == nil {
 		return nil, errors.New("business entity with apiKey not present")
 	}
 	fromObj := s.smsRepo.FindLeastUsedSender()
 	messageTemplate := s.smsRepo.FindLeastUsedMessageTemplate()
-	converter := utils.CodeConverter{Code: pin, Source: source, Destination: dest}
-	messageToSend := messageTemplate.OutputFormattedMessage(*converter.ConvertMessage())
+	var messageToSend string
+	if conversion {
+		converter := utils.CodeConverter{Code: pin, Source: source, Destination: dest}
+		messageToSend = messageTemplate.OutputFormattedMessage(*converter.ConvertMessage())
+	} else {
+		messageToSend = pin
+	}
 	message := s.CreateMessage(*businessModel, *fromObj, to, messageToSend)
 	// increment from and template count
 	fromObj.Count++
-	messageTemplate.Count++
 	s.smsRepo.GetDB().Save(fromObj)
+	messageTemplate.Count++
 	s.smsRepo.GetDB().Save(messageTemplate)
 	dispatcher := utils.GetMessageDispatcher(message.Id, message.FromNumber, message.ToNumber, message.Content)
-	dispatcher.Send()
+	response := dispatcher.Send()
+	message.SendingTime = time.Now()
+	message.IsSent = true
+	if response.IsSuccess {
+		message.IsSuccessful = true
+		message.ResponseId = response.ResponseId
+	} else {
+		message.IsSuccessful = false
+		message.Reason = response.ErrorText
+	}
+	s.smsRepo.GetDB().Save(message)
 	return message, nil
 }
 

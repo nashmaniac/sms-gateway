@@ -20,6 +20,8 @@ type Message struct {
 	Reason string `json:"reason"`
 	CreationTime time.Time `json:"creation_time"`
 	UpdateTime time.Time `json:"update_time"`
+	IsSent bool `json:"is_sent" gorm:"default:false"`
+	IsSuccessful bool `json:"is_successful" gorm:"default:false"`
 }
 
 func (m *Message) BeforeCreate(tx *gorm.DB) (err error)  {

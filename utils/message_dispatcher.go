@@ -1,6 +1,8 @@
 package utils
 
-import "sms-gateway/carrier_config"
+import (
+	"sms-gateway/carrier_config"
+)
 
 type MessageDispatcher struct {
 	MessageId string
@@ -18,9 +20,9 @@ func GetMessageDispatcher(messageId string, from string, to string, content stri
 	}
 }
 
-func (d *MessageDispatcher) Send() {
+func (d *MessageDispatcher) Send() *carrier_config.CarrierResponse {
 	// TODO select the lowest cost carrier
 	// by default send by ada reach
 	carrier := carrier_config.GetAdaInstance()
-	carrier.Send(d.From, d.To, d.Content)
+	return carrier.Send(d.From, d.To, d.Content)
 }
