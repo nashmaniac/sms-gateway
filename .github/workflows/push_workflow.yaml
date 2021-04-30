@@ -1,0 +1,113 @@
+name: Build & Deploy to Azure
+on:
+  push:
+    branches:
+      - develop
+env:
+  AZURE_REGISTRY_USERNAME: ${{secrets.AZURE_REGISTRY_USERNAME}}
+  AZURE_REGISTRY_PASSWORD: ${{secrets.AZURE_REGISTRY_PASSWORD}}
+  AZURE_REGISTRY: ${{secrets.AZURE_REGISTRY}}
+  REPO_NAME: ${{secrets.REPO_NAME}}
+  AZURE_CREDENTIALS: ${{secrets.AZURE_CREDENTIALS}}
+  AZURE_CLUSTER_URL: ${{secrets.AZURE_CLUSTER_URL}}
+  AZURE_CLUSTER_TOKEN: ${{secrets.AZURE_CLUSTER_TOKEN}}
+  APP_NAME: ${{secrets.APP_NAME}}
+  MODE_NAME: "dev"
+  SECRET_KEY: ${{secrets.}}
+  DB_HOST: ${{secrets.DB_HOST}}
+  DB_PORT: ${{secrets.DB_PORT}}
+  DB_USER: ${{secrets.DB_USER}}
+  DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+  DB_NAME: ${{secrets.DB_NAME}}
+  MOBIREACH_URL: ${{secrets.MOBIREACH_URL}}
+  MOBIREACH_USERNAME: ${{secrets.MOBIREACH_USERNAME}}
+  MOBIREACH_PASSWORD: ${{secrets.MOBIREACH_PASSWORD}}
+  MOBIREACH_FROM: ${{secrets.MOBIREACH_FROM}}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - uses: satackey/action-docker-layer-caching@v0.0.4
+      - name: Build & Push Actions
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{env.AZURE_REGISTRY_USERNAME}}
+          password: ${{ env.AZURE_REGISTRY_PASSWORD }}
+          registry: ${{ env.AZURE_REGISTRY }}
+          repository: ${{env.REPO_NAME}}-${{env.MODE_NAME}}
+          tag_with_sha: true
+  deploy:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Set Repo Location # steps required to find the image id of our image from contiainer registry
+        id: repo
+        run: echo "::set-output name=repo_name::${{ env.AZURE_REGISTRY }}/${{env.REPO_NAME}}-${{env.MODE_NAME}}:sha-$(git rev-parse --short HEAD)" # we are setting the image location as output to be used in later step
+      - name: Check Repo Location
+        run: echo ${{ steps.repo.outputs.repo_name }} # checking our repo location
+      - name: Install Kubectl
+        uses: azure/setup-kubectl@v1
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }}
+      - uses: azure/k8s-set-context@v1
+        with:
+          method: service-account
+          k8s-url: ${{env.AZURE_CLUSTER_URL}}
+          k8s-secret: ${{env.AZURE_CLUSTER_TOKEN}}
+        id: setcontext
+      - name: Install Helm # helm installation in our runner for deploying.
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+          helm version
+      - name: Delete jobs
+        run: |
+          kubectl delete jobs --all --all-namespaces
+          kubectl get pods --all-namespaces --field-selector 'status.phase==Failed' -o json | kubectl delete -f -
+      - name: Install chart
+        run: >
+          helm upgrade
+          --install
+          --set app.name="${{env.APP_NAME}}"
+          --set app.mode="${{env.MODE_NAME}}"
+          --set secrets.secret_key="${{env.SECRET_KEY}}"
+          --set secrets.image_name="${{steps.repo.outputs.repo_name}}"
+          --set secrets.db_name="${{env.DB_NAME}}"
+          --set secrets.db_username="${{env.DB_USER}}"
+          --set secrets.db_password="${{env.DB_PASSWORD}}"
+          --set secrets.db_port="${{env.DB_PORT}}"
+          --set secrets.db_host="${{env.DB_HOST}}"
+          --set secrets.mobireach_url="${{env.MOBIREACH_URL}}"
+          --set secrets.mobireach_username="${{env.MOBIREACH_USERNAME}}"
+          --set secrets.mobireach_password="${{env.MOBIREACH_PASSWORD}}"
+          --set secrets.mobireach_from="${{env.MOBIREACH_FROM}}"
+          --wait
+          --atomic
+          ${{env.APP_NAME}}-${{env.MODE_NAME}}-chart
+          ./k8s
+      #      - name: Install istio charts
+      #        run: >
+      #          helm upgrade
+      #          --install
+      #          --set service.name="${{env.APP_NAME}}-biponon-api"
+      #          --set domain="${{env.DOMAIN_NAME}}"
+      #          --set sub_domain_1="${{env.sub_domain_1}}"
+      #          --set sub_domain_2="${{env.sub_domain_2}}"
+      #          --set mode_name="${{ env.MODE_NAME }}"
+      #          --wait
+      #          --atomic
+      #          ${{env.MODE_NAME}}-istio-charts
+      #          ./istio-charts
+      - name: Check pods # checking pod list to see if they are running.
+        run: |
+          kubectl get pods --all
+          kubectl get services --all
+          kubectl get vs --all
