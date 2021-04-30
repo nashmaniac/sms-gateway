@@ -13,7 +13,8 @@ import (
 var dbObj *gorm.DB;
 
 func checkEnvironmentVariables() {
-	envVar := []string {"DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_SSLMODE", "DB_TIMEZONE"} 
+	envVar := []string {"DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT",
+		"DB_SSLMODE", "DB_TIMEZONE", "ADAREACH_URL", "ADAREACH_USERNAME", "ADAREACH_PASSWORD", }
 	for _, key := range envVar {
 		val, isPresent := os.LookupEnv(key)
 		if !isPresent {

@@ -72,25 +72,14 @@ func (ada *AdaReach) Send(from string, to string, content string) *CarrierRespon
 }
 
 func (ada *AdaReach) InitCarrier(from string, to string, content string) *AdaReach {
-	url, url_exists := os.LookupEnv("ADAREACH_URL")
-	if !url_exists {
-		url = "https://api.mobireach.com.bd/SendTextMessage"
-	}
-
-	username, username_exists := os.LookupEnv("ADAREACH_USERNAME")
-	if !username_exists {
-		username = "shagor"
-	}
-
-	password, password_exists := os.LookupEnv("ADAREACH_URL")
-	if !password_exists {
-		password = "Sh@g0R21AdmiN"
-	}
+	url, _ := os.LookupEnv("ADAREACH_URL")
+	username, _ := os.LookupEnv("ADAREACH_USERNAME")
+	password, _ := os.LookupEnv("ADAREACH_PASSWORD")
 	ada.Username = username
 	ada.Password = password
 	ada.URL = url
 	ada.Method = "GET"
-	ada.From = "adareach"
+	ada.From = from
 	ada.To = to
 	ada.Message = content
 	return ada
