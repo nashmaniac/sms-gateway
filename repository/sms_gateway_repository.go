@@ -2,8 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	"sms-gateway/db"
-	"sms-gateway/interfaces"
+	"sms-gateway/interfaces/repository"
 	"sms-gateway/models"
 )
 
@@ -28,7 +27,10 @@ func (s *smsRepository) FindLeastUsedSender() *models.Sender {
 
 func (s *smsRepository) FindBusinessEntityByApiKey(apiKey string) *models.BusinessEntity {
 	var model models.BusinessEntity
-	s.db.Where("api_key = ?", apiKey).First(&model)
+	err := s.db.Where("api_key = ?", apiKey).First(&model).Error
+	if err != nil {
+		return nil
+	}
 	return &model
 }
 
@@ -53,9 +55,8 @@ func (s *smsRepository) CreateMessageTemplate(m models.MessageTemplate) *models.
 	return &m
 }
 
-func NewSmsRepository() interfaces.SmsRepository {
-	database := db.GetPostgresConnection()
+func NewSmsRepository(db *gorm.DB) repository.SmsRepository {
 	return &smsRepository{
-		db: database,
+		db: db,
 	}
 }

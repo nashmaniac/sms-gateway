@@ -1,4 +1,4 @@
-package interfaces
+package carrier
 
 import (
 	"sms-gateway/carrier_config"

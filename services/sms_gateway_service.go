@@ -2,14 +2,15 @@ package services
 
 import (
 	"errors"
-	"sms-gateway/interfaces"
+	"sms-gateway/interfaces/repository"
+	"sms-gateway/interfaces/services"
 	"sms-gateway/models"
 	"sms-gateway/utils"
 	"time"
 )
 
 type smsService struct {
-	smsRepo interfaces.SmsRepository
+	smsRepo repository.SmsRepository
 }
 
 func (s *smsService) SendTextMessage(apiKey string, pin string, to string, source string, dest string, conversion bool) (*models.Message, error) {
@@ -99,7 +100,7 @@ func (s *smsService) CreateMessageTemplate(message string, category string) *mod
 	return savedModel
 }
 
-func NewSmsService(repository interfaces.SmsRepository) interfaces.SmsService {
+func NewSmsService(repository repository.SmsRepository) services.SmsService {
 	return &smsService{
 		smsRepo: repository,
 	}

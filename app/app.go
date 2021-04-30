@@ -2,9 +2,15 @@ package app
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"log"
 	"os"
+	"sms-gateway/db"
+	"sms-gateway/routes"
 )
+
+var dbObj *gorm.DB;
 
 func checkEnvironmentVariables() {
 	envVar := []string {"DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_SSLMODE", "DB_TIMEZONE"} 
@@ -17,8 +23,18 @@ func checkEnvironmentVariables() {
 	}
 }
 
+func setupRouter(db *gorm.DB) *gin.Engine {
+	r := gin.Default()
+	r = routes.ConfigureSmSRouter(r, db)
+	r = routes.ConfigureBusinessRouter(r, db)
+	return r
+}
+
 func StartApp() {
-	log.Println("Hello World")
-	//checkEnvironmentVariables()
-	//scripts.RunTestScripts()
+	checkEnvironmentVariables()
+	dbObj := db.GetPostgresConnection()
+	dbInstance, _ := dbObj.DB()
+	defer dbInstance.Close()
+	r := setupRouter(dbObj)
+	r.Run()
 }

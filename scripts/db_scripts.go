@@ -3,6 +3,7 @@ package scripts
 import (
 	"fmt"
 	"log"
+	db2 "sms-gateway/db"
 	"sms-gateway/repository"
 	"sms-gateway/services"
 )
@@ -15,7 +16,8 @@ func PopulateMessageTemplateDB() {
 		{"%v হচ্ছে আপনার লগইন কোড", "OTP"},
 		{"সালাম। আপনার কোড %v। ধন্যবাদ। ", "OTP"},
 	}
-	repo := repository.NewSmsRepository()
+	db := db2.GetPostgresConnection()
+	repo := repository.NewSmsRepository(db)
 	smsService := services.NewSmsService(repo)
 	for _, message := range messages {
 		savedTemplate := smsService.CreateMessageTemplate(message[0], message[1])
@@ -30,7 +32,8 @@ func PopulateSenderToDB() {
 		"8801719267494",
 		"8801720267494",
 	}
-	repo := repository.NewSmsRepository()
+	db := db2.GetPostgresConnection()
+	repo := repository.NewSmsRepository(db)
 	smsService := services.NewSmsService(repo)
 
 	for _, sender := range senders {
@@ -41,8 +44,8 @@ func PopulateSenderToDB() {
 
 func PopulateBusinessEntityToDB() {
 	names := []string {"BAT", "Unilever", "Trust Bank"}
-
-	repo := repository.NewSmsRepository()
+	db := db2.GetPostgresConnection()
+	repo := repository.NewSmsRepository(db)
 	smsService := services.NewSmsService(repo)
 
 	for i, name := range names {

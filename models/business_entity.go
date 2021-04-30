@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"sms-gateway/dto/business"
 	"sms-gateway/utils"
 	"time"
 )
@@ -27,4 +28,14 @@ func (b *BusinessEntity) BeforeCreate(tx *gorm.DB) (err error)  {
 func (b *BusinessEntity) BeforeSave(tx *gorm.DB) (err error)  {
 	b.UpdateTime = time.Now()
 	return
+}
+
+func (b BusinessEntity) ToBusinessResponse() business.BusinessEntityResponse {
+	return business.BusinessEntityResponse{
+		Id:           b.Id,
+		Name:         b.Name,
+		ApiKey:       b.ApiKey,
+		CreationTime: b.CreationTime,
+		UpdateTime:   b.UpdateTime,
+	}
 }
