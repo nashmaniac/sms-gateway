@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-deployment
+  namespace: {{.Values.NAMESPACE_NAME}}
+spec:
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-template
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-container
+          image: {{.Values.IMAGE_NAME}}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: DB_NAME
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: DB_HOST
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: DB_USER
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASSWORD
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PORT
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+            - name: DB_SSLMODE
+              valueFrom:
+                secretKeyRef:
+                  key: DB_SSLMODE
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+            - name: DB_TIMEZONE
+              valueFrom:
+                secretKeyRef:
+                  key: DB_TIMEZONE
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+            - name: ADAREACH_URL
+              valueFrom:
+                secretKeyRef:
+                  key: ADAREACH_URL
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+            - name: ADAREACH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_NAME
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+            - name: ADAREACH_USERNME
+              valueFrom:
+                secretKeyRef:
+                  key: ADAREACH_USERNME
+                  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-secrets
+
+
