@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-deployment
-  namespace: {{.Values.NAMESPACE_NAME}}
+  namespace: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}
 spec:
   selector:
     matchLabels:
