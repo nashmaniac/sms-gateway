@@ -134,6 +134,6 @@ jobs:
           ./istio-charts
       - name: Check pods # checking pod list to see if they are running.
         run: |
-          kubectl get pods --all
-          kubectl get services --all
-          kubectl get vs --all
+          kubectl get pods --all-namespaces
+          kubectl get services --all-namespaces
+          kubectl get vs --all-namespaces
