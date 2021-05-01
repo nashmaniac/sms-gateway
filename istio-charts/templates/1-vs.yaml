@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-api-virtual-service
+spec:
+  hosts:
+    - {{.Values.NAME}}-{{.Values.MODE}}-svc.{{.Values.NAME}}-{{.Values.MODE}}.svc.cluster.local
+    - {{.Values.MODE}}-{{.Values.DOMAIN}}.qikcheck.com
+  gateways:
+    - "default/custom-gateway"
+  http:
+    - name: default-route
+      route:
+        - destination:
+            host: {{.Values.NAME}}-{{.Values.MODE}}-svc.{{.Values.NAME}}-{{.Values.MODE}}.svc.cluster.local
+            port:
+              number: 80
