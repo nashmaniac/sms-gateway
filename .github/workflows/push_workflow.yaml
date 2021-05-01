@@ -13,16 +13,16 @@ env:
   AZURE_CLUSTER_TOKEN: ${{secrets.AZURE_CLUSTER_TOKEN}}
   APP_NAME: ${{secrets.APP_NAME}}
   MODE_NAME: "dev"
-  SECRET_KEY: ${{secrets.}}
-  DB_HOST: ${{secrets.DB_HOST}}
-  DB_PORT: ${{secrets.DB_PORT}}
-  DB_USER: ${{secrets.DB_USER}}
-  DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-  DB_NAME: ${{secrets.DB_NAME}}
-  MOBIREACH_URL: ${{secrets.MOBIREACH_URL}}
-  MOBIREACH_USERNAME: ${{secrets.MOBIREACH_USERNAME}}
-  MOBIREACH_PASSWORD: ${{secrets.MOBIREACH_PASSWORD}}
-  MOBIREACH_FROM: ${{secrets.MOBIREACH_FROM}}
+  DB_NAME: ${{secrets.DEV_DB_NAME}}
+  DB_USER: ${{secrets.DEV_DB_USER}}
+  DB_PASSWORD: ${{secrets.DEV_DB_PASSWORD}}
+  DB_HOST: ${{secrets.DEV_DB_HOST}}
+  DB_PORT: ${{secrets.DEV_DB_PORT}}
+  DB_SSLMODE: ${{secrets.DEV_DB_SSLMODE}}
+  DB_TIMEZONE: ${{secrets.DEV_DB_TIMEZONE}}
+  ADAREACH_URL: ${{secrets.DEV_ADAREACH_URL}}
+  ADAREACH_USERNAME: ${{secrets.DEV_ADAREACH_USERNAME}}
+  ADAREACH_PASSWORD: ${{secrets.DEV_ADAREACH_PASSWORD}}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -76,19 +76,20 @@ jobs:
         run: >
           helm upgrade
           --install
-          --set app.name="${{env.APP_NAME}}"
-          --set app.mode="${{env.MODE_NAME}}"
-          --set secrets.secret_key="${{env.SECRET_KEY}}"
-          --set secrets.image_name="${{steps.repo.outputs.repo_name}}"
-          --set secrets.db_name="${{env.DB_NAME}}"
-          --set secrets.db_username="${{env.DB_USER}}"
-          --set secrets.db_password="${{env.DB_PASSWORD}}"
-          --set secrets.db_port="${{env.DB_PORT}}"
-          --set secrets.db_host="${{env.DB_HOST}}"
-          --set secrets.mobireach_url="${{env.MOBIREACH_URL}}"
-          --set secrets.mobireach_username="${{env.MOBIREACH_USERNAME}}"
-          --set secrets.mobireach_password="${{env.MOBIREACH_PASSWORD}}"
-          --set secrets.mobireach_from="${{env.MOBIREACH_FROM}}"
+          --set NAME="${{env.APP_NAME}}"
+          --set IMAGE_NAME="${{steps.repo.outputs.repo_name}}"
+          --set NAMESPACE_NAME="${{env.APP_NAME}}-${{env.MODE_NAME}}"
+          --set MODE="${{env.MODE_NAME}}"
+          --set SECRETS.DB_NAME="${{env.DB_NAME}}"
+          --set SECRETS.DB_USER="${{env.DB_USER}}"
+          --set SECRETS.DB_PASSWORD="${{env.DB_PASSWORD}}"
+          --set SECRETS.DB_HOST="${{env.DB_HOST}}"
+          --set SECRETS.DB_PORT="${{env.DB_PORT}}"
+          --set SECRETS.DB_SSLMODE="${{env.DB_SSLMODE}}"
+          --set SECRETS.DB_TIMEZONE="${{env.DB_TIMEZONE}}"
+          --set SECRETS.ADAREACH_URL="${{env.ADAREACH_URL}}"
+          --set SECRETS.ADAREACH_USERNAME="${{env.ADAREACH_USERNAME}}"
+          --set SECRETS.ADAREACH_PASSWORD="${{env.ADAREACH_PASSWORD}}"
           --wait
           --atomic
           ${{env.APP_NAME}}-${{env.MODE_NAME}}-chart
