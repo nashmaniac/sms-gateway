@@ -33,7 +33,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=${{ env.AZURE_REGISTRY }}/${{env.REPO_NAME}}
+          DOCKER_IMAGE=${{ env.AZURE_REGISTRY }}/${{env.REPO_NAME}}-${{env.MODE_NAME}}
           VERSION=edge
           if [[ $GITHUB_REF == refs/tags/* ]]; then
           VERSION=${GITHUB_REF#refs/tags/}
