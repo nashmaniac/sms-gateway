@@ -35,7 +35,7 @@ func setupRouter(db *gorm.DB) *gin.Engine {
 
 func StartApp() {
 	checkEnvironmentVariables()
-	dbObj := db.GetPostgresConnection()
+	dbObj = db.GetPostgresConnection()
 	dbInstance, _ := dbObj.DB()
 	defer dbInstance.Close()
 	r := setupRouter(dbObj)
