@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}-svc
-  namespace: {{.Values.NAMESPACE_NAME}}
+  namespace: {{.Values.NAME}}-{{.Values.NAMESPACE_NAME}}
 spec:
   selector:
     app: api

@@ -13,31 +13,58 @@ env:
   AZURE_CLUSTER_TOKEN: ${{secrets.AZURE_CLUSTER_TOKEN}}
   APP_NAME: ${{secrets.APP_NAME}}
   MODE_NAME: "dev"
-  SECRET_KEY: ${{secrets.}}
-  DB_HOST: ${{secrets.DB_HOST}}
-  DB_PORT: ${{secrets.DB_PORT}}
-  DB_USER: ${{secrets.DB_USER}}
-  DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-  DB_NAME: ${{secrets.DB_NAME}}
-  MOBIREACH_URL: ${{secrets.MOBIREACH_URL}}
-  MOBIREACH_USERNAME: ${{secrets.MOBIREACH_USERNAME}}
-  MOBIREACH_PASSWORD: ${{secrets.MOBIREACH_PASSWORD}}
-  MOBIREACH_FROM: ${{secrets.MOBIREACH_FROM}}
+  DOMAIN: ${{secrets.DOMAIN}}
+  DB_NAME: ${{secrets.DEV_DB_NAME}}
+  DB_USER: ${{secrets.DEV_DB_USER}}
+  DB_PASSWORD: ${{secrets.DEV_DB_PASSWORD}}
+  DB_HOST: ${{secrets.DEV_DB_HOST}}
+  DB_PORT: ${{secrets.DEV_DB_PORT}}
+  DB_SSLMODE: ${{secrets.DEV_DB_SSLMODE}}
+  DB_TIMEZONE: ${{secrets.DEV_DB_TIMEZONE}}
+  ADAREACH_URL: ${{secrets.DEV_ADAREACH_URL}}
+  ADAREACH_USERNAME: ${{secrets.DEV_ADAREACH_USERNAME}}
+  ADAREACH_PASSWORD: ${{secrets.DEV_ADAREACH_PASSWORD}}
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      - uses: satackey/action-docker-layer-caching@v0.0.4
-      - name: Build & Push Actions
-        uses: docker/build-push-action@v1
+      - name: Prepare
+        id: prep
+        run: |
+          DOCKER_IMAGE=${{ env.AZURE_REGISTRY }}/${{env.REPO_NAME}}-${{env.MODE_NAME}}
+          VERSION=edge
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+          elif [[ $GITHUB_REF == refs/heads/* ]]; then
+          VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+          elif [[ $GITHUB_REF == refs/pull/* ]]; then
+          VERSION=pr-${{ github.event.number }}
+          fi
+          TAGS="${DOCKER_IMAGE}:${VERSION}"
+          if [ "${{ github.event_name }}" = "push" ]; then
+          TAGS="$TAGS,${DOCKER_IMAGE}:sha-${GITHUB_SHA::8}"
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=tags::${TAGS}
+          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+      - name: Login to ACR
+        uses: docker/login-action@v1
         with:
           username: ${{env.AZURE_REGISTRY_USERNAME}}
           password: ${{ env.AZURE_REGISTRY_PASSWORD }}
           registry: ${{ env.AZURE_REGISTRY }}
-          repository: ${{env.REPO_NAME}}-${{env.MODE_NAME}}
-          tag_with_sha: true
+      - name: Build & Push Actions
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.prep.outputs.tags }}
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.created=${{ steps.prep.outputs.created }}
+            org.opencontainers.image.revision=${{ github.sha }}
   deploy:
     needs:
       - build
@@ -47,7 +74,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Set Repo Location # steps required to find the image id of our image from contiainer registry
         id: repo
-        run: echo "::set-output name=repo_name::${{ env.AZURE_REGISTRY }}/${{env.REPO_NAME}}-${{env.MODE_NAME}}:sha-$(git rev-parse --short HEAD)" # we are setting the image location as output to be used in later step
+        run: echo "::set-output name=repo_name::${{ env.AZURE_REGISTRY }}/${{env.REPO_NAME}}-${{env.MODE_NAME}}:sha-${GITHUB_SHA::8}" # we are setting the image location as output to be used in later step
       - name: Check Repo Location
         run: echo ${{ steps.repo.outputs.repo_name }} # checking our repo location
       - name: Install Kubectl
@@ -76,38 +103,37 @@ jobs:
         run: >
           helm upgrade
           --install
-          --set app.name="${{env.APP_NAME}}"
-          --set app.mode="${{env.MODE_NAME}}"
-          --set secrets.secret_key="${{env.SECRET_KEY}}"
-          --set secrets.image_name="${{steps.repo.outputs.repo_name}}"
-          --set secrets.db_name="${{env.DB_NAME}}"
-          --set secrets.db_username="${{env.DB_USER}}"
-          --set secrets.db_password="${{env.DB_PASSWORD}}"
-          --set secrets.db_port="${{env.DB_PORT}}"
-          --set secrets.db_host="${{env.DB_HOST}}"
-          --set secrets.mobireach_url="${{env.MOBIREACH_URL}}"
-          --set secrets.mobireach_username="${{env.MOBIREACH_USERNAME}}"
-          --set secrets.mobireach_password="${{env.MOBIREACH_PASSWORD}}"
-          --set secrets.mobireach_from="${{env.MOBIREACH_FROM}}"
+          --set NAME="${{env.APP_NAME}}"
+          --set IMAGE_NAME="${{steps.repo.outputs.repo_name}}"
+          --set NAMESPACE_NAME="${{env.MODE_NAME}}"
+          --set MODE="${{env.MODE_NAME}}"
+          --set SECRETS.DB_NAME="${{env.DB_NAME}}"
+          --set SECRETS.DB_USER="${{env.DB_USER}}"
+          --set SECRETS.DB_PASSWORD="${{env.DB_PASSWORD}}"
+          --set SECRETS.DB_HOST="${{env.DB_HOST}}"
+          --set SECRETS.DB_PORT="${{env.DB_PORT}}"
+          --set SECRETS.DB_SSLMODE="${{env.DB_SSLMODE}}"
+          --set SECRETS.DB_TIMEZONE="${{env.DB_TIMEZONE}}"
+          --set SECRETS.ADAREACH_URL="${{env.ADAREACH_URL}}"
+          --set SECRETS.ADAREACH_USERNAME="${{env.ADAREACH_USERNAME}}"
+          --set SECRETS.ADAREACH_PASSWORD="${{env.ADAREACH_PASSWORD}}"
           --wait
           --atomic
           ${{env.APP_NAME}}-${{env.MODE_NAME}}-chart
           ./k8s
-      #      - name: Install istio charts
-      #        run: >
-      #          helm upgrade
-      #          --install
-      #          --set service.name="${{env.APP_NAME}}-biponon-api"
-      #          --set domain="${{env.DOMAIN_NAME}}"
-      #          --set sub_domain_1="${{env.sub_domain_1}}"
-      #          --set sub_domain_2="${{env.sub_domain_2}}"
-      #          --set mode_name="${{ env.MODE_NAME }}"
-      #          --wait
-      #          --atomic
-      #          ${{env.MODE_NAME}}-istio-charts
-      #          ./istio-charts
+      - name: Install istio charts
+        run: >
+          helm upgrade
+          --install
+          --set NAME="${{env.APP_NAME}}"
+          --set MODE="${{env.MODE_NAME}}"
+          --set DOMAIN="${{env.DOMAIN}}"
+          --wait
+          --atomic
+          ${{env.MODE_NAME}}-istio-charts
+          ./istio-charts
       - name: Check pods # checking pod list to see if they are running.
         run: |
-          kubectl get pods --all
-          kubectl get services --all
-          kubectl get vs --all
+          kubectl get pods --all-namespaces
+          kubectl get services --all-namespaces
+          kubectl get vs --all-namespaces
