@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/lab-smart/sms-gateway/db"
 	"github.com/lab-smart/sms-gateway/routes"
@@ -38,5 +39,6 @@ func StartApp() {
 	dbInstance, _ := dbObj.DB()
 	defer dbInstance.Close()
 	r := setupRouter(dbObj)
+	r.Use(cors.Default())
 	r.Run()
 }
