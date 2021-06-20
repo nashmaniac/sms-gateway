@@ -1,12 +1,13 @@
 package db
 
 import (
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"os"
-	"sms-gateway/models"
 	"strconv"
+
+	"github.com/lab-smart/sms-gateway/models"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func BuildConnectionObject() models.DBConnectionHolder {
@@ -26,13 +27,13 @@ func BuildConnectionObject() models.DBConnectionHolder {
 		Password: password,
 		Name:     name,
 		Username: user,
-		Port: int(p),
+		Port:     int(p),
 		Timezone: timezone,
 		Sslmode:  sslmode,
 	}
 }
 
-func GetPostgresConnection() *gorm.DB  {
+func GetPostgresConnection() *gorm.DB {
 	dbObj := BuildConnectionObject()
 	log.Println("Connecting to the database")
 	db, err := gorm.Open(postgres.Open(dbObj.GetDSNString()), &gorm.Config{

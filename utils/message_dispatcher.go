@@ -1,14 +1,14 @@
 package utils
 
 import (
-	"sms-gateway/carrier_config"
+	"github.com/lab-smart/sms-gateway/carrier_config"
 )
 
 type MessageDispatcher struct {
 	MessageId string
-	From string
-	To string
-	Content string
+	From      string
+	To        string
+	Content   string
 }
 
 func GetMessageDispatcher(messageId string, from string, to string, content string) *MessageDispatcher {

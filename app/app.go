@@ -2,19 +2,20 @@ package app
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"log"
 	"os"
-	"sms-gateway/db"
-	"sms-gateway/routes"
+
+	"github.com/gin-gonic/gin"
+	"github.com/lab-smart/sms-gateway/db"
+	"github.com/lab-smart/sms-gateway/routes"
+	"gorm.io/gorm"
 )
 
-var dbObj *gorm.DB;
+var dbObj *gorm.DB
 
 func checkEnvironmentVariables() {
-	envVar := []string {"DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT",
-		"DB_SSLMODE", "DB_TIMEZONE", "ADAREACH_URL", "ADAREACH_USERNAME", "ADAREACH_PASSWORD", }
+	envVar := []string{"DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT",
+		"DB_SSLMODE", "DB_TIMEZONE", "ADAREACH_URL", "ADAREACH_USERNAME", "ADAREACH_PASSWORD"}
 	for _, key := range envVar {
 		val, isPresent := os.LookupEnv(key)
 		if !isPresent {

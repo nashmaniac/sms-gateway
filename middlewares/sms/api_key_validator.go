@@ -2,11 +2,12 @@ package sms
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"sms-gateway/dto/errors"
-	"sms-gateway/interfaces/services"
+
+	"github.com/gin-gonic/gin"
+	"github.com/lab-smart/sms-gateway/dto/errors"
+	"github.com/lab-smart/sms-gateway/interfaces/services"
 )
 
 func ApiKeyValidator(service services.SmsService) gin.HandlerFunc {

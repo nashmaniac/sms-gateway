@@ -2,11 +2,12 @@ package services
 
 import (
 	"errors"
-	"sms-gateway/interfaces/repository"
-	"sms-gateway/interfaces/services"
-	"sms-gateway/models"
-	"sms-gateway/utils"
 	"time"
+
+	"github.com/lab-smart/sms-gateway/interfaces/repository"
+	"github.com/lab-smart/sms-gateway/interfaces/services"
+	"github.com/lab-smart/sms-gateway/models"
+	"github.com/lab-smart/sms-gateway/utils"
 )
 
 type smsService struct {
@@ -73,14 +74,14 @@ func (s *smsService) GetBusinessEntityByApiKey(apiKey string) (*models.BusinessE
 
 func (s *smsService) CreateBusinessEntity(entity string) *models.BusinessEntity {
 	model := models.BusinessEntity{
-		Name:         entity,
+		Name: entity,
 	}
 	return s.smsRepo.CreateBusinessEntity(model)
 }
 
 func (s *smsService) CreateSender(sender string) *models.Sender {
 	model := models.Sender{
-		Msisdn:       sender,
+		Msisdn: sender,
 	}
 	savedModel := s.smsRepo.CreateSender(model)
 	return savedModel

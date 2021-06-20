@@ -1,12 +1,13 @@
 package routes
 
 import (
+	controller_implementation "github.com/lab-smart/sms-gateway/controllers"
+
 	"github.com/gin-gonic/gin"
+	"github.com/lab-smart/sms-gateway/interfaces/controllers"
+	"github.com/lab-smart/sms-gateway/repository"
+	"github.com/lab-smart/sms-gateway/services"
 	"gorm.io/gorm"
-	controller_implementation "sms-gateway/controllers"
-	"sms-gateway/interfaces/controllers"
-	"sms-gateway/repository"
-	"sms-gateway/services"
 )
 
 func ConfigureBusinessController(db *gorm.DB) controllers.BusinessController {
@@ -23,7 +24,7 @@ func configureBusinessVersionOne(group *gin.RouterGroup, db *gorm.DB) *gin.Route
 	return v1
 }
 
-func ConfigureBusinessRouter(r *gin.Engine, db *gorm.DB) *gin.Engine{
+func ConfigureBusinessRouter(r *gin.Engine, db *gorm.DB) *gin.Engine {
 	businessGroup := r.Group("/business")
 	configureBusinessVersionOne(businessGroup, db)
 	return r

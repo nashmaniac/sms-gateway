@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
-	"sms-gateway/dto/errors"
-	"sms-gateway/interfaces/controllers"
-	"sms-gateway/interfaces/services"
-	"sms-gateway/utils"
+
+	"github.com/gin-gonic/gin"
+	"github.com/lab-smart/sms-gateway/dto/errors"
+	"github.com/lab-smart/sms-gateway/interfaces/controllers"
+	"github.com/lab-smart/sms-gateway/interfaces/services"
+	"github.com/lab-smart/sms-gateway/utils"
 )
 
 type smsController struct {
@@ -60,7 +61,7 @@ func (s *smsController) SendSMS(c *gin.Context) {
 	c.JSON(http.StatusOK, msg)
 }
 
-func NewSMSController(service services.SmsService) controllers.SMSController{
+func NewSMSController(service services.SmsService) controllers.SMSController {
 	return &smsController{
 		smsService: service,
 	}

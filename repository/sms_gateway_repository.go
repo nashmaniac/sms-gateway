@@ -1,9 +1,9 @@
 package repository
 
 import (
+	"github.com/lab-smart/sms-gateway/interfaces/repository"
+	"github.com/lab-smart/sms-gateway/models"
 	"gorm.io/gorm"
-	"sms-gateway/interfaces/repository"
-	"sms-gateway/models"
 )
 
 type smsRepository struct {
@@ -36,7 +36,7 @@ func (s *smsRepository) FindBusinessEntityByApiKey(apiKey string) *models.Busine
 
 func (s *smsRepository) CreateBusinessEntity(entity models.BusinessEntity) *models.BusinessEntity {
 	s.db.Create(&entity)
-	return &entity;
+	return &entity
 }
 
 func (s *smsRepository) CreateSender(sender models.Sender) *models.Sender {

@@ -3,7 +3,7 @@ package scripts
 import (
 	"fmt"
 	"math/rand"
-	"sms-gateway/utils"
+	"github.com/lab-smart/sms-gateway/utils"
 	"strconv"
 )
 

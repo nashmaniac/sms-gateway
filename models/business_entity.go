@@ -1,23 +1,24 @@
 package models
 
 import (
-	"github.com/google/uuid"
-	"gorm.io/gorm"
-	"sms-gateway/dto/business"
-	"sms-gateway/utils"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/lab-smart/sms-gateway/dto/business"
+	"github.com/lab-smart/sms-gateway/utils"
+	"gorm.io/gorm"
 )
 
 type BusinessEntity struct {
-	Id uuid.UUID `json:"id" gorm:"primary_key"`
-	Name string `json:"name"`
-	ApiKey string `json:"api_key"`
+	Id           uuid.UUID `json:"id" gorm:"primary_key"`
+	Name         string    `json:"name"`
+	ApiKey       string    `json:"api_key"`
 	CreationTime time.Time `json:"creation_time"`
-	UpdateTime time.Time `json:"update_time"`
-	Message []Message
+	UpdateTime   time.Time `json:"update_time"`
+	Message      []Message
 }
 
-func (b *BusinessEntity) BeforeCreate(tx *gorm.DB) (err error)  {
+func (b *BusinessEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	b.Id = uuid.New()
 	b.CreationTime = time.Now()
 	b.UpdateTime = time.Now()
@@ -25,7 +26,7 @@ func (b *BusinessEntity) BeforeCreate(tx *gorm.DB) (err error)  {
 	return
 }
 
-func (b *BusinessEntity) BeforeSave(tx *gorm.DB) (err error)  {
+func (b *BusinessEntity) BeforeSave(tx *gorm.DB) (err error) {
 	b.UpdateTime = time.Now()
 	return
 }
