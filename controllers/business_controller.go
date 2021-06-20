@@ -3,10 +3,10 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sms-gateway/dto/business"
-	"sms-gateway/dto/errors"
-	"sms-gateway/interfaces/controllers"
-	"sms-gateway/interfaces/services"
+	"github.com/lab-smart/sms-gateway/dto/business"
+	"github.com/lab-smart/sms-gateway/dto/errors"
+	"github.com/lab-smart/sms-gateway/interfaces/controllers"
+	"github.com/lab-smart/sms-gateway/interfaces/services"
 )
 
 type businessController struct {

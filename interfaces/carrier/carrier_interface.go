@@ -1,7 +1,7 @@
 package carrier
 
 import (
-	"sms-gateway/carrier_config"
+	"github.com/lab-smart/sms-gateway/carrier_config"
 )
 
 type CarrierInterface interface {

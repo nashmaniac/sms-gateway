@@ -1,7 +1,7 @@
 package services
 
 import (
-	"sms-gateway/models"
+	"github.com/lab-smart/sms-gateway/models"
 )
 
 type SmsService interface {

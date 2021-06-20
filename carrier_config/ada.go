@@ -3,26 +3,26 @@ package carrier_config
 import (
 	"encoding/xml"
 	"fmt"
-	"github.com/go-resty/resty/v2"
 	"log"
 	"os"
-	"sms-gateway/carrier_wise_response"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/lab-smart/sms-gateway/carrier_wise_response"
 )
 
 type AdaReach struct {
-	From string
-	To string
-	Message string
-	URL string
-	Method string
+	From     string
+	To       string
+	Message  string
+	URL      string
+	Method   string
 	Username string
 	Password string
 }
 
-func GetAdaInstance() *AdaReach{
+func GetAdaInstance() *AdaReach {
 	return &AdaReach{}
 }
-
 
 func (ada AdaReach) BuildQueryParams() map[string]string {
 	m := make(map[string]string)
@@ -65,8 +65,8 @@ func (ada *AdaReach) Send(from string, to string, content string) *CarrierRespon
 		}
 	} else {
 		return &CarrierResponse{
-			IsSuccess:  false,
-			ErrorText:  "Error in Ada Api",
+			IsSuccess: false,
+			ErrorText: "Error in Ada Api",
 		}
 	}
 }
@@ -84,5 +84,3 @@ func (ada *AdaReach) InitCarrier(from string, to string, content string) *AdaRea
 	ada.Message = content
 	return ada
 }
-
-

@@ -3,14 +3,17 @@ package scripts
 import (
 	"log"
 	"math/rand"
-	"sms-gateway/repository"
-	"sms-gateway/services"
-	"sms-gateway/utils"
 	"strconv"
+
+	"github.com/lab-smart/sms-gateway/db"
+	"github.com/lab-smart/sms-gateway/repository"
+	"github.com/lab-smart/sms-gateway/services"
+	"github.com/lab-smart/sms-gateway/utils"
 )
 
 func TestSMSFormatting() {
-	repo := repository.NewSmsRepository()
+	db := db.GetPostgresConnection()
+	repo := repository.NewSmsRepository(db)
 	service := services.NewSmsService(repo)
 	messageTemplate := service.FindLeastUsedMessageTemplate()
 	n := rand.Int()
@@ -27,7 +30,8 @@ func TestSMSFormatting() {
 
 func TestSMSSending() {
 	apiKey := "XoEFfRsWxPLDnJObCsNV"
-	repo := repository.NewSmsRepository()
+	db := db.GetPostgresConnection()
+	repo := repository.NewSmsRepository(db)
 	service := services.NewSmsService(repo)
 	n := rand.Int()
 	englishString := strconv.FormatInt(int64(n), 10)

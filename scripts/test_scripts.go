@@ -1,6 +1,6 @@
 package scripts
 
-import "sms-gateway/db"
+import "github.com/lab-smart/sms-gateway/db"
 
 func RunTestScripts() {
 	db.GetPostgresConnection()

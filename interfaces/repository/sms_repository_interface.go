@@ -1,8 +1,8 @@
 package repository
 
 import (
+	"github.com/lab-smart/sms-gateway/models"
 	"gorm.io/gorm"
-	"sms-gateway/models"
 )
 
 type SmsRepository interface {

@@ -1,4 +1,4 @@
-module sms-gateway
+module github.com/lab-smart/sms-gateway
 
 go 1.16
 

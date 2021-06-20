@@ -3,13 +3,14 @@ package scripts
 import (
 	"fmt"
 	"log"
-	db2 "sms-gateway/db"
-	"sms-gateway/repository"
-	"sms-gateway/services"
+
+	db2 "github.com/lab-smart/sms-gateway/db"
+	"github.com/lab-smart/sms-gateway/repository"
+	"github.com/lab-smart/sms-gateway/services"
 )
 
 func PopulateMessageTemplateDB() {
-	messages := [][]string {
+	messages := [][]string{
 		{"ভাল থাকবেন %v", "OTP"},
 		{"আপনার অ্যাাপটি সচল করতে এই কোডটি প্রবেশ করান %v", "OTP"},
 		{"আপনার গোপন কোড %v", "OTP"},
@@ -26,7 +27,7 @@ func PopulateMessageTemplateDB() {
 }
 
 func PopulateSenderToDB() {
-	senders := []string {
+	senders := []string{
 		"8801886267494",
 		"8801886267495",
 		"8801719267494",
@@ -43,7 +44,7 @@ func PopulateSenderToDB() {
 }
 
 func PopulateBusinessEntityToDB() {
-	names := []string {"BAT", "Unilever", "Trust Bank"}
+	names := []string{"BAT", "Unilever", "Trust Bank"}
 	db := db2.GetPostgresConnection()
 	repo := repository.NewSmsRepository(db)
 	smsService := services.NewSmsService(repo)

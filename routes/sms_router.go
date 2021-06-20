@@ -2,13 +2,13 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	controller_implementation "github.com/lab-smart/sms-gateway/controllers"
+	"github.com/lab-smart/sms-gateway/interfaces/controllers"
+	services2 "github.com/lab-smart/sms-gateway/interfaces/services"
+	"github.com/lab-smart/sms-gateway/middlewares/sms"
+	"github.com/lab-smart/sms-gateway/repository"
+	"github.com/lab-smart/sms-gateway/services"
 	"gorm.io/gorm"
-	controller_implementation "sms-gateway/controllers"
-	"sms-gateway/interfaces/controllers"
-	services2 "sms-gateway/interfaces/services"
-	"sms-gateway/middlewares/sms"
-	"sms-gateway/repository"
-	"sms-gateway/services"
 )
 
 func ConfigureSMSService(db *gorm.DB) services2.SmsService {
