@@ -1,5 +1,5 @@
 FROM golang:latest
-MAINTAINER Raju Ahmed Shetu
+LABEL org.opencontainers.image.authors="shetu2153@gmail.com"
 RUN mkdir /app
 WORKDIR /app
 COPY go.mod .
