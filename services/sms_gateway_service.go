@@ -14,26 +14,33 @@ type smsService struct {
 	smsRepo repository.SmsRepository
 }
 
-func (s *smsService) SendTextMessage(apiKey string, pin string, to string, source string, dest string, conversion bool) (*models.Message, error) {
+func (s *smsService) SendTextMessage(apiKey string, content string, to string, source string, dest string, conversion bool, overrideTemplate bool) (*models.Message, error) {
 	businessModel := s.smsRepo.FindBusinessEntityByApiKey(apiKey)
 	if businessModel == nil {
 		return nil, errors.New("business entity with apiKey not present")
 	}
 	fromObj := s.smsRepo.FindLeastUsedSender()
-	messageTemplate := s.smsRepo.FindLeastUsedMessageTemplate()
 	var messageToSend string
-	if conversion {
-		converter := utils.CodeConverter{Code: pin, Source: source, Destination: dest}
-		messageToSend = messageTemplate.OutputFormattedMessage(*converter.ConvertMessage())
+	var messageTemplate *models.MessageTemplate
+	if !overrideTemplate {
+		messageTemplate = s.smsRepo.FindLeastUsedMessageTemplate()
+		if conversion {
+			converter := utils.CodeConverter{Code: content, Source: source, Destination: dest}
+			messageToSend = messageTemplate.OutputFormattedMessage(*converter.ConvertMessage())
+		} else {
+			messageToSend = content
+		}
 	} else {
-		messageToSend = pin
+		messageToSend = content
 	}
 	message := s.CreateMessage(*businessModel, *fromObj, to, messageToSend)
 	// increment from and template count
 	fromObj.Count++
 	s.smsRepo.GetDB().Save(fromObj)
-	messageTemplate.Count++
-	s.smsRepo.GetDB().Save(messageTemplate)
+	if !overrideTemplate && messageTemplate != nil {
+		messageTemplate.Count++
+		s.smsRepo.GetDB().Save(messageTemplate)
+	}
 	dispatcher := utils.GetMessageDispatcher(message.Id, message.FromNumber, message.ToNumber, message.Content)
 	response := dispatcher.Send()
 	message.SendingTime = time.Now()

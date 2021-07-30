@@ -1,13 +1,11 @@
 package scripts
 
-import "github.com/lab-smart/sms-gateway/db"
-
 func RunTestScripts() {
-	db.GetPostgresConnection()
-	//PopulateMessageTemplateDB()
+	// db.GetPostgresConnection()
 	//TestSMSFormatting()
-	//PopulateSenderToDB()
-	//PopulateBusinessEntityToDB()
-	TestSMSSending()
+	PopulateBusinessEntityToDB()
+	PopulateSenderToDB()
+	PopulateMessageTemplateDB()
+	// TestSMSSending()
 	//TestSMSSendingCarrier()
 }

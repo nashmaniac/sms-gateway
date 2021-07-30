@@ -12,5 +12,5 @@ type SmsService interface {
 	GetBusinessEntityByApiKey(apiKey string) (*models.BusinessEntity, error)
 	FindLeastUsedSender() *models.Sender
 	CreateMessage(entity models.BusinessEntity, from models.Sender, to string, content string) *models.Message
-	SendTextMessage(apiKey string, pin string, to string, source string, dest string, conversion bool) (*models.Message, error)
+	SendTextMessage(apiKey string, content string, to string, source string, dest string, conversion bool, overrideTemplate bool) (*models.Message, error)
 }

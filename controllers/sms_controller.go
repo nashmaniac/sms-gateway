@@ -33,10 +33,10 @@ func (s *smsController) SendSMS(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	pin, err := c.GetQuery("pin")
+	message, err := c.GetQuery("message")
 	if !err {
 		c.AbortWithStatusJSON(http.StatusBadRequest, errors.ErrorResponse{
-			Message: "Pin is mssing",
+			Message: "Message is mssing",
 			Code:    http.StatusBadRequest,
 		})
 		c.Abort()
@@ -46,9 +46,22 @@ func (s *smsController) SendSMS(c *gin.Context) {
 	if !err {
 		source = "en"
 	}
+
+	overrideTemplate := false
+	o, err := c.GetQuery("override")
+	if !err {
+		overrideTemplate = false
+	} else {
+		if o == "true" {
+			overrideTemplate = true
+		} else {
+			overrideTemplate = false
+		}
+	}
+
 	destinaton := utils.DetectDestinationBasedOnNumber(toNum)
 
-	msg, er := s.smsService.SendTextMessage(apiKey, pin, toNum, source, *destinaton, true)
+	msg, er := s.smsService.SendTextMessage(apiKey, message, toNum, source, *destinaton, true, overrideTemplate)
 	if er != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, errors.ErrorResponse{
 			Message: er.Error(),
